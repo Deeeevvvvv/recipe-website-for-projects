@@ -31,7 +31,7 @@ export const Home = () => {
 
     fetchRecipes();
     fetchSavedRecipes();
-  }, []);
+  }, [userID]);
 
   const saveRecipe = async (recipeID) => {
     try {
@@ -40,6 +40,15 @@ export const Home = () => {
         userID,
       });
       setSavedRecipes(response.data.savedRecipes);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const deleteRecipe = async (recipeID) => {
+    try {
+      await axios.delete(`http://localhost:4000/recipes/${recipeID}`);
+      setRecipes((prevRecipes) => prevRecipes.filter(recipe => recipe._id !== recipeID));
     } catch (err) {
       console.log(err);
     }
@@ -57,13 +66,21 @@ export const Home = () => {
               <div>
                 <h2 className="card-title">{recipe.name}</h2>
               </div>
-              <button
-                onClick={() => saveRecipe(recipe._id)}
-                className={`btn ${isRecipeSaved(recipe._id) ? "btn-success" : "btn-primary"}`}
-                disabled={isRecipeSaved(recipe._id)}
-              >
-                {isRecipeSaved(recipe._id) ? "Saved" : "Save"}
-              </button>
+              <div>
+                <button
+                  onClick={() => saveRecipe(recipe._id)}
+                  className={`btn ${isRecipeSaved(recipe._id) ? "btn-success" : "btn-primary"}`}
+                  disabled={isRecipeSaved(recipe._id)}
+                >
+                  {isRecipeSaved(recipe._id) ? "Saved" : "Save"}
+                </button>
+                <button
+                  onClick={() => deleteRecipe(recipe._id)}
+                  className="btn btn-danger ms-2"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
             <div className="card-body">
               <div className="instructions">
@@ -71,8 +88,8 @@ export const Home = () => {
               </div>
               <h5>Ingredients</h5>
               {
-                recipe.ingredients.map((ingredient) => (
-                  <ul className="ingredient-list">
+                recipe.ingredients.map((ingredient, index) => (
+                  <ul key={index} className="ingredient-list">
                     <li className="card-text">{ingredient}</li>
                   </ul>
                 ))
@@ -84,5 +101,9 @@ export const Home = () => {
         ))}
       </ul>
     </div>
+
   );
-};
+}
+
+
+ 

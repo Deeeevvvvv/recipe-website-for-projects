@@ -2,7 +2,6 @@ import express from "express";
 import mongoose from "mongoose";
 import { RecipesModel } from "../models/Recipes.js";
 import { UserModel } from "../models/Users.js";
-import { verifyToken } from "./user.js";
 
 const router = express.Router();
 
@@ -41,7 +40,6 @@ router.post("/", async (req, res) => {
       },
     });
   } catch (err) {
-    // console.log(err);
     res.status(500).json(err);
   }
 });
@@ -93,6 +91,30 @@ router.get("/savedRecipes/:userId", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
+  }
+});
+
+// Delete a recipe
+router.delete("/:recipeId", async (req, res) => {
+  const recipeId = req.params.recipeId;
+
+  try {
+    const recipe = await RecipesModel.findById(recipeId);
+
+    if (!recipe) {
+      return res.status(404).json({ message: "Recipe not found" });
+    }
+
+    // If you want to check if the recipe belongs to the user, uncomment the lines below
+    // if (recipe.userOwner.toString() !== userId) {
+    //   return res.status(403).json({ message: "Unauthorized action" });
+    // }
+
+    await RecipesModel.deleteOne({ _id: recipeId });
+
+    res.status(200).json({ message: "Recipe deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Error deleting recipe", error: err });
   }
 });
 

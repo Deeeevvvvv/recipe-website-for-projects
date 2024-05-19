@@ -19,7 +19,7 @@ app.use("/auth", userRouter);
 app.use("/recipes", recipesRouter);
 
 // Connect to MongoDB
-mongoose.connect(process.env.DB)
+mongoose.connect("mongodb+srv://admin:123@cluster0.do5jojc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 .then(() => {
     app.listen(port, () => { console.log(`Server running on port: ${port}`) });
 }).catch((error) => {
